@@ -1,0 +1,84 @@
+#!/bin/bash
+
+in_git_repo () {
+  git status >/dev/null 2>/dev/null
+}
+
+case "$1" in
+  --help|-h|-?)
+    cat <<EOF
+git-subdirs - Run a single git command in all subdirectories.
+
+Usage:
+    git subdirs COMMAND
+    git subdirs --allow-write COMMAND
+    git subdirs --help
+
+This command will run `git COMMAND' in each subdirectory of the
+current directory if that subdirectory is a git repository, By
+default, it uses `unionfs-fuse' to run git in a read-only view of the
+repository. This allows you to run commands to query the status of
+each repository such as `status' and `log' without risk of
+accidentally damaging many repositories at once with a command like
+`branch -D master'.
+
+If `unionfs-fuse' is unavailable, read-only mode is disabled.
+
+You can use the `--allow-write' option to run a command that modifies
+the repositories. I recommend that you think carefully before using
+this option.
+
+If the current directory is inside a git repository, this command will
+do nothing, and suggest that you simply run `git COMMAND' instead.
+
+EOF
+    ;;
+  --allow-write)
+    ALLOW_WRITE=1
+    shift
+    ;;
+  *)
+    unset ALLOW_WRITE
+    if which unionfs-fuse &>/dev/null; then
+      # Unionfs FUSE is available
+    else
+      cat <<EOF
+You need unionfs-fuse to use read-only mode. If you are careful, you
+can use `--allow-write' to work in read-write mode instead.
+
+EOF
+      exit 1
+    fi
+    ;;
+esac
+
+if in_git_repo; then
+  echo "You're already in a git repo. Maybe try this?"
+  echo "git $@"
+  exit 1
+fi
+
+if [ -n "$ALLOW_WRITE" ]; then
+  unset TMPDIR
+else
+  TMPDIR=`mktemp -d`
+  unionfs-fuse "`pwd`"=RO $TMPDIR
+  pushd $TMPDIR &>/dev/null
+fi
+
+for dir in */; do
+  pushd $dir &>/dev/null
+  if in_git_repo; then
+    echo "$dir"
+    git "$@"
+    echo "---------"
+  fi
+  popd &>/dev/null
+done
+
+if [ -n "$TMPDIR" ]; then
+  popd &>/dev/null
+  fusermount -uz $TMPDIR
+  rmdir $TMPDIR
+  grep $TMPDIR /proc/mounts
+fi
