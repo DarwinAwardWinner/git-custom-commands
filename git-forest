@@ -195,14 +195,45 @@ sub get_refs
 }
 
 #
+# get_current_branch - get the name of the currently-checked-out
+# branch, if any. Returns empty string for no branch.
+#
+BEGIN {
+    my $current_branch = undef;
+    sub get_current_branch {
+        if (!defined $current_branch) {
+            $current_branch = $Repo->command("branch", "--no-color");
+            chomp($current_branch);
+            # Chop the leading '* '
+            $current_branch = substr($current_branch, 2);
+            if ($current_branch =~ '\(no branch\)'){
+                $current_branch = '';
+            }
+        }
+        return $current_branch;
+    }
+}
+
+
+#
 # ref_print - print a ref with color
 # @s:   ref name
 #
 sub ref_print
 {
-    foreach my $symbol (@{shift @_}) {
+    my @refs = @{shift @_};
+    my $current_branch = get_current_branch();
+    foreach my $symbol (@refs) {
+        # Skip current branch, because it will be printed along with HEAD
+        next if ($current_branch && $symbol eq "refs/heads/$current_branch");
+
         print $Color{at}, "[";
-        if ($symbol eq "HEAD" || $symbol =~ m{^rebase/}) {
+        if ($current_branch && $symbol eq "HEAD") {
+            print $Color{hhead}, 'HEAD/', $Color{head}, $current_branch;
+            # Shortcut: don't need this anymore
+        }
+        # This case still covers a detached head
+        elsif ($symbol eq "HEAD" || $symbol =~ m{^rebase/}) {
             print $Color{hhead}, $symbol;
         }
         elsif ($symbol =~ m{^refs/remotes/([^/]+)/(.*)}s) {
