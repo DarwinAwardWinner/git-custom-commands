@@ -1,11 +1,16 @@
 # git-subdirs
 
-Run a single git command in all subdirectories.
+Run a single git command in all subdirectories
 
 ## Usage:
+
+Run a git command in each subdirectory of the current directory:
+
     git subdirs COMMAND
+
+Same, but with write permissions.
+
     git subdirs --allow-write COMMAND
-    git subdirs --help
 
 ## Description
 
@@ -25,4 +30,3 @@ this option.
 
 If the current directory is inside a git repository, this command will
 do nothing, and suggest that you simply run `git COMMAND` instead.
-
