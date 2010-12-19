@@ -1,8 +1,22 @@
+# git-in-repo
+
+Determine if the current directory is in a git repository. Returns
+true if so, false otherwise. This is mostly for use in other scripts,
+so that they can abort if run outside a git repo.
+
+## Usage
+
+    if git in-repo; then
+      git status
+    else
+      echo "Not in a git repository"
+    fi
+
 # git-subdirs
 
 Run a single git command in all subdirectories
 
-## Usage:
+## Usage
 
 Run a git command in each subdirectory of the current directory:
 
@@ -30,3 +44,39 @@ this option.
 
 If the current directory is inside a git repository, this command will
 do nothing, and suggest that you simply run `git COMMAND` instead.
+
+# git-setup-github-origin
+
+Set up a github repo as "origin."
+
+## Usage
+
+Set Github username (required for use):
+
+    git config --global github.user GITHUB_USERNAME
+
+Set up origin to refer to the Github repository owned by you with the
+same name as current directory:
+
+    git setup-github-origin
+
+Specify the Github repository name explicitly:
+
+    git setup-github-origin GITHUB_REPO_NAME
+
+Force Github to be origin even if the repo already has an origin set up:
+
+    git setup-github-origin --force
+
+## What it does
+
+The following configuration variables are set in the local repository:
+
+    remote.origin.url = git@github.com:${GITHUB_USERNAME}/${GITHUB_REPO_NAME}.git
+    remote.origin.fetch = +refs/heads/*:refs/remotes/origin/*
+
+In addition, if `branch.master.remote` is unset, the following are set:
+
+    branch.master.remote = origin
+    branch.master.merge = refs/heads/master
+
