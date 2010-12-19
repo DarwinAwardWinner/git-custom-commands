@@ -1,9 +1,5 @@
 #!/bin/bash
 
-in_git_repo () {
-  git status >/dev/null 2>/dev/null
-}
-
 case "$1" in
   --allow-write)
     ALLOW_WRITE=1
@@ -25,7 +21,7 @@ EOF
     ;;
 esac
 
-if in_git_repo; then
+if git in-repo; then
   echo "You're already in a git repo. Maybe try this?"
   echo "git $@"
   exit 1
@@ -41,7 +37,7 @@ fi
 
 for dir in */; do
   pushd $dir &>/dev/null
-  if in_git_repo; then
+  if git in-repo; then
     echo "$dir"
     git "$@"
     echo "---------"

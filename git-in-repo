@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# Return true if inside a git repo
+git status >/dev/null 2>/dev/null
