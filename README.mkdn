@@ -70,13 +70,29 @@ Force Github to be origin even if the repo already has an origin set up:
 
 ## What it does
 
+### Set up remote origin
+
 The following configuration variables are set in the local repository:
 
     remote.origin.url = git@github.com:${GITHUB_USERNAME}/${GITHUB_REPO_NAME}.git
     remote.origin.fetch = +refs/heads/*:refs/remotes/origin/*
 
-In addition, if `branch.master.remote` is unset, the following are set:
+This is equivalent to the directions given by Github when you create a
+new repository.
+
+If `remote.origin.url` is already set, then you must specify `--force`
+in order to overwrite anything.
+
+### Set up branch master
+
+In addition, if `branch.master.remote` is unset, the following
+variables are set:
 
     branch.master.remote = origin
     branch.master.merge = refs/heads/master
 
+Github does not mention setting these variables commands when you
+create a new repository, but they are set automatically when you clone
+an existing one. So if you want all your Github repositories to have
+comparable configs whether you first cloned from Github or started
+from scratch, you must set these in repos that you started locally.
