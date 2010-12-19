@@ -198,22 +198,25 @@ sub get_refs
 # get_current_branch - get the name of the currently-checked-out
 # branch, if any. Returns empty string for no branch.
 #
-BEGIN {
+{
     my $current_branch = undef;
     sub get_current_branch {
         if (!defined $current_branch) {
-            $current_branch = $Repo->command("branch", "--no-color");
-            chomp($current_branch);
-            # Chop the leading '* '
-            $current_branch = substr($current_branch, 2);
-            if ($current_branch =~ '\(no branch\)'){
+            my @branches = split "\n", $Repo->command("branch", "--no-color");
+            for my $line (@branches) {
+                chomp $line;
+                if ($line =~ m{\* (.*)}) {
+                    $current_branch = $1;
+                    last;
+                }
+            }
+            if ($current_branch eq '(no branch)'){
                 $current_branch = '';
             }
         }
         return $current_branch;
     }
 }
-
 
 #
 # ref_print - print a ref with color

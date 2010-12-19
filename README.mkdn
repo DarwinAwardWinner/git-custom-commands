@@ -97,6 +97,12 @@ an existing one. So if you want all your Github repositories to have
 comparable configs whether you first cloned from Github or started
 from scratch, you must set these in repos that you started locally.
 
+## Future
+
+If I find an easy way to check for the existence of a Github repo and
+create a Github repo from the command-line, I can have this command
+auto-create a repo if it doesn't exist. Suggestions welcome.
+
 # git-forest
 
 This was not originally written by me. The original is from [http://jengelh.medozas.de/projects/hxtools/]. I made some minor modifications to it. You'll have to diff it with the
