@@ -96,3 +96,8 @@ create a new repository, but they are set automatically when you clone
 an existing one. So if you want all your Github repositories to have
 comparable configs whether you first cloned from Github or started
 from scratch, you must set these in repos that you started locally.
+
+# git-forest
+
+This was not originally written by me. The original is from [http://jengelh.medozas.de/projects/hxtools/]. I made some minor modifications to it. You'll have to diff it with the
+original to see.
