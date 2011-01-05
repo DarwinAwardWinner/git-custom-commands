@@ -48,5 +48,5 @@ do nothing, and suggest that you simply run `git COMMAND` instead.
 # git-forest
 
 This was not originally written by me. The original is from
-[http://jengelh.medozas.de/projects/hxtools/]. I made some minor
+http://jengelh.medozas.de/projects/hxtools/. I made some minor
 modifications to it. You'll have to diff it with the original to see.
