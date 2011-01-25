@@ -1,6 +1,18 @@
 #!/bin/bash
 
 case "$1" in
+  -h|-?|--help)
+    cat <<EOF
+usage: git subdirs [--allow-write] <command>
+
+Runs "git <command>" in each subdirectory of the current directory
+that is a git repository, with all write permissions disabled for the
+repository. "git <command>" is actually run in a *read-only* copy of
+each repository, unless you specify --allow-write, in which case the
+command runs in the real repository with write permissions.
+EOF
+    exit
+    ;;
   --allow-write)
     ALLOW_WRITE=1
     shift
