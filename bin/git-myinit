@@ -1,0 +1,16 @@
+#!/bin/sh
+
+post_init () {
+  touch .gitignore && git commit .gitignore -m "Initial commit"
+}
+
+git init "$@";
+EXITCODE=$?
+
+if [ $EXITCODE != 0 ]; then
+  exit $EXITCODE
+elif git have-commits; then
+  exit $EXITCODE
+else
+  post_init()
+fi

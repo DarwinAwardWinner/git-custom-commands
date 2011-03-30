@@ -55,3 +55,12 @@ modifications to it. You'll have to diff it with the original to see.
 
 Returns true if the current directory is inside a git repository *and*
 that repository has at least one commit.
+
+# git-myinit
+
+Equivalent to
+
+    git init && touch .gitignore && git commit .gitignore -m "Initial commit"
+
+except that if the repository already has a commit in it, it just does
+`git init`.
