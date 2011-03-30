@@ -50,3 +50,8 @@ do nothing, and suggest that you simply run `git COMMAND` instead.
 This was not originally written by me. The original is from
 http://jengelh.medozas.de/projects/hxtools/. I made some minor
 modifications to it. You'll have to diff it with the original to see.
+
+# git-have-commits
+
+Returns true if the current directory is inside a git repository *and*
+that repository has at least one commit.
