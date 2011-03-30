@@ -1,2 +1,2 @@
 #!/bin/sh
-git rev-parse HEAD >/dev/null 2>&1
+git rev-list -n 1 --all >/dev/null 2>&1
