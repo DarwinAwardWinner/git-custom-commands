@@ -12,5 +12,5 @@ if [ $EXITCODE != 0 ]; then
 elif git have-commits; then
   exit $EXITCODE
 else
-  post_init()
+  post_init
 fi
