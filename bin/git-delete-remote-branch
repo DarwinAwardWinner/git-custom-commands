@@ -1,0 +1,34 @@
+#!/bin/bash
+
+print_help_and_exit () {
+    cat <<EOF
+Usage: git delete-remote-branch [REMOTE-NAME] BRANCH-NAME
+
+If no remote name is specified, the default remote for that branch
+will be used (as defined in the config file). The the branch has no
+remote configured, "origin" will be used.
+EOF
+    exit
+}
+
+case "$1" in
+  -h|-help|--help|-?)
+    print_help_and_exit
+    ;;
+esac
+if [ -n "$2" ]; then
+  REMOTE="$1"
+  BRANCH="$2"
+elif [ -n "$1" ]; then
+  BRANCH="$1"
+  REMOTE="$(git config --get branch.${BRANCH}.remote)"
+  if [ -z "$REMOTE" ]; then
+    REMOTE="origin"
+  fi
+else
+  print_help_and_exit
+fi
+
+echo "Deleting branch $BRANCH from remote $REMOTE"
+
+exec git push "$REMOTE" ":$BRANCH"
