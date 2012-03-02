@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rm -rf .git/refs/wip
+if [ -e .git/packed-refs ]; then
+  perl -i -lape 's{^.*refs/wip/}{# $&}' .git/packed-refs
+fi
