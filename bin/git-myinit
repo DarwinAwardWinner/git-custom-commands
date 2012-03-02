@@ -1,16 +1,34 @@
-#!/bin/sh
+#!/bin/bash
 
 post_init () {
+  dir="$1"
+  cd "$dir"
   touch .gitignore && git add .gitignore && git commit .gitignore -m "Initial commit"
 }
 
-git init "$@";
+tempfile=$(mktemp)
+
+git init "$@" >$tempfile;
 EXITCODE=$?
+
+cat $tempfile
 
 if [ $EXITCODE != 0 ]; then
   exit $EXITCODE
-elif git have-commits; then
-  exit $EXITCODE
 else
-  post_init
+  REPO_GIT_DIR=$(head -n1 $tempfile | perl -lape 's/^.*?Git repository in //g')
+  BARE=$(git --git-dir="$REPO_GIT_DIR" config core.bare)
+  if [ "$BARE" = "true" ]; then
+    # Don't operate on bare repos
+    exit $EXITCODE
+  elif [ "$(basename "$REPO_GIT_DIR")" != ".git" ]; then
+    # Git dir must be named ".git"
+    exit $EXITCODE
+  elif git --git-dir="$REPO_GIT_DIR" have-commits; then
+    exit $EXITCODE
+  fi
+
+  # Repo is ok to work on
+  REPO_WORK_DIR=$(dirname "$REPO_GIT_DIR")
+  post_init "$REPO_WORK_DIR"
 fi
