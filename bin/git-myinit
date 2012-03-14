@@ -11,12 +11,15 @@ tempfile=$(mktemp)
 git init "$@" >$tempfile;
 EXITCODE=$?
 
+# Produce the normal output of git-init
 cat $tempfile
+
+REPO_GIT_DIR=$(head -n1 $tempfile | perl -lape 's/^.*?Git repository in //g')
+rm -f $tempfile
 
 if [ $EXITCODE != 0 ]; then
   exit $EXITCODE
 else
-  REPO_GIT_DIR=$(head -n1 $tempfile | perl -lape 's/^.*?Git repository in //g')
   BARE=$(git --git-dir="$REPO_GIT_DIR" config core.bare)
   if [ "$BARE" = "true" ]; then
     # Don't operate on bare repos
