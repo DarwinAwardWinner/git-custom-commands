@@ -1,0 +1,46 @@
+#!/bin/bash
+
+post_init () {
+  dir="$1"
+  cd "$dir"
+  # Add an initial commit
+  touch .gitignore && git add .gitignore && git commit .gitignore -m "Initial commit"
+  # Allow pushing to master
+  git config receive.denyCurrentBranch ignore
+  # Reset hard after receiving a push
+  cat > .git/hooks/post-receive <<EOF
+#!/bin/sh
+cd ..
+env -i git reset --hard
+EOF
+  chmod +x .git/hooks/post-receive
+  echo "Repo configured to receive pushes unconditionally"
+}
+
+tempfile=$(mktemp)
+
+git init "$@" >$tempfile;
+EXITCODE=$?
+
+cat $tempfile
+REPO_GIT_DIR=$(head -n1 $tempfile | perl -lape 's/^.*?Git repository in //g')
+rm -f $tempfile
+
+if [ $EXITCODE != 0 ]; then
+  exit $EXITCODE
+else
+  BARE=$(git --git-dir="$REPO_GIT_DIR" config core.bare)
+  if [ "$BARE" = "true" ]; then
+    # Don't operate on bare repos
+    exit $EXITCODE
+  elif [ "$(basename "$REPO_GIT_DIR")" != ".git" ]; then
+    # Git dir must be named ".git"
+    exit $EXITCODE
+  elif git --git-dir="$REPO_GIT_DIR" have-commits; then
+    exit $EXITCODE
+  fi
+
+  # Repo is ok to work on
+  REPO_WORK_DIR=$(dirname "$REPO_GIT_DIR")
+  post_init "$REPO_WORK_DIR"
+fi
